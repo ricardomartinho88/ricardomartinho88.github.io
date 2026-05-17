@@ -75,111 +75,16 @@
         float: right;
         margin-top: -10px;
     }
+
+    .credito {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 13px;
+        opacity: 0.7;
+        color: var(--text);
+    }
 </style>
 </head>
 
 <body>
-
-<button id="themeToggle" class="btn" onclick="toggleTheme()">Alternar Tema</button>
-
-<h1>App de Troca de Figurinhas</h1>
-
-<h2>1. Sua lista de figurinhas que faltam (salva automaticamente)</h2>
-<textarea id="minhaLista" placeholder="Cole aqui sua lista..."></textarea>
-<button class="btn" onclick="salvarMinhaLista()">Salvar Minha Lista</button>
-
-<h2>2. Lista de repetidas da outra pessoa</h2>
-<textarea id="listaOutro" placeholder="Cole aqui a lista da outra pessoa..."></textarea>
-<button class="btn" onclick="cruzarListas()">Cruzar Listas</button>
-
-<h2>Resultado</h2>
-<div id="resultado">Nenhum resultado ainda.</div>
-<button class="btn" onclick="copiarWhatsApp()">Copiar para WhatsApp</button>
-
-<script>
-function parseList(text) {
-    const lines = text.split("\n");
-    const result = {};
-
-    for (let line of lines) {
-        if (!line.includes(":")) continue;
-
-        const [country, numbers] = line.split(":");
-        const cleanNumbers = numbers
-            .replace(/\(.*?\)/g, "")
-            .split(",")
-            .map(n => parseInt(n))
-            .filter(n => !isNaN(n));
-
-        result[country.trim().toUpperCase()] = cleanNumbers;
-    }
-
-    return result;
-}
-
-function salvarMinhaLista() {
-    const texto = document.getElementById("minhaLista").value;
-    localStorage.setItem("minhaListaFigurinhas", texto);
-    alert("Lista salva!");
-}
-
-function carregarMinhaLista() {
-    const salva = localStorage.getItem("minhaListaFigurinhas");
-    if (salva) {
-        document.getElementById("minhaLista").value = salva;
-    }
-}
-
-function cruzarListas() {
-    const minhaLista = parseList(document.getElementById("minhaLista").value);
-    const listaOutro = parseList(document.getElementById("listaOutro").value);
-
-    let resultado = "Figurinhas que você precisa e ele tem:\n\n";
-    let encontrou = false;
-
-    for (let country in listaOutro) {
-        if (!minhaLista[country]) continue;
-
-        const match = listaOutro[country].filter(n =>
-            minhaLista[country].includes(n)
-        );
-
-        if (match.length > 0) {
-            encontrou = true;
-            resultado += `${country}: ${match.join(", ")}\n`;
-        }
-    }
-
-    if (!encontrou) {
-        resultado = "Nenhuma figurinha encontrada.";
-    }
-
-    document.getElementById("resultado").innerText = resultado;
-}
-
-function copiarWhatsApp() {
-    const texto = document.getElementById("resultado").innerText;
-    navigator.clipboard.writeText(texto);
-    alert("Copiado! Agora é só colar no WhatsApp.");
-}
-
-function toggleTheme() {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("temaFigurinhas", document.body.classList.contains("dark") ? "dark" : "light");
-}
-
-function carregarTema() {
-    const tema = localStorage.getItem("temaFigurinhas");
-    if (tema === "dark") {
-        document.body.classList.add("dark");
-    }
-}
-
-carregarMinhaLista();
-carregarTema();
-</script>
-    
-<div class="credito">criado por: Ricardo Martinho</div>
-
-</body>
-</html>
